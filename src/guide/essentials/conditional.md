@@ -1,5 +1,13 @@
 # Conditional Rendering
 
+<div class="options-api">
+  <VueSchoolLink href="https://vueschool.io/lessons/conditional-rendering-in-vue-3" title="Free Vue.js Conditional Rendering Lesson"/>
+</div>
+
+<div class="composition-api">
+  <VueSchoolLink href="https://vueschool.io/lessons/vue-fundamentals-capi-conditionals-in-vue" title="Free Vue.js Conditional Rendering Lesson"/>
+</div>
+
 <script setup>
 import { ref } from 'vue'
 const awesome = ref(true)
@@ -103,7 +111,7 @@ Generally speaking, `v-if` has higher toggle costs while `v-show` has higher ini
 ## `v-if` with `v-for`
 
 ::: warning Note
-It's **not** recommended to use `v-if` and `v-for` on the same element due to implicit precedence. Refer to [style guide](/style-guide/#avoid-v-if-with-v-for-essential) for details.
+It's **not** recommended to use `v-if` and `v-for` on the same element due to implicit precedence. Refer to [style guide](/style-guide/rules-essential.html#avoid-v-if-with-v-for) for details.
 :::
 
 When `v-if` and `v-for` are both used on the same element, `v-if` will be evaluated first. See the [list rendering guide](list#v-for-with-v-if) for details.

@@ -55,7 +55,7 @@ Provides animated transition effects to a **single** element or component.
      * Controls the timing sequence of leaving/entering transitions.
      * Default behavior is simultaneous.
      */
-    mode?: 'in-out' | 'out-in'
+    mode?: 'in-out' | 'out-in' | 'default'
     /**
      * Whether to apply transition on initial render.
      * Default: false
@@ -244,9 +244,9 @@ Caches dynamically toggled components wrapped inside.
   </KeepAlive>
 
   <!-- Array (use `v-bind`) -->
-  <keepalive :include="['a', 'b']">
+  <KeepAlive :include="['a', 'b']">
     <component :is="view"></component>
-  </keepalive>
+  </KeepAlive>
   ```
 
   Usage with `max`:
@@ -301,7 +301,7 @@ Renders its slot content to another part of the DOM.
 
 - **See also:** [Guide - Teleport](/guide/built-ins/teleport.html)
 
-## `<Suspense>` <sup class="vt-badge warning">experimental</sup>
+## `<Suspense>` <sup class="vt-badge experimental" />
 
 Used for orchestrating nested async dependencies in a component tree.
 

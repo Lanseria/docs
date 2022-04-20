@@ -1,10 +1,9 @@
 import fs from 'fs'
 import path from 'path'
 import { defineConfigWithTheme } from 'vitepress'
+import type { Config as ThemeConfig } from '@vue/theme'
 import baseConfig from '@vue/theme/config'
 import { headerPlugin } from './headerMdPlugin'
-import type { Config } from '@vue/theme'
-import { UserConfig } from 'vitepress'
 
 const nav = [
   {
@@ -35,6 +34,13 @@ const nav = [
     text: 'Ecosystem',
     activeMatch: `^/ecosystem/`,
     items: [
+      {
+        text: 'Core Libraries',
+        items: [
+          { text: 'Vue Router', link: 'https://router.vuejs.org/' },
+          { text: 'Pinia', link: 'https://pinia.vuejs.org/' }
+        ]
+      },
       {
         text: 'Resources',
         items: [
@@ -531,8 +537,8 @@ export const sidebar = {
   ]
 }
 
-export default defineConfigWithTheme<Config>({
-  extends: baseConfig as () => UserConfig<Config>,
+export default defineConfigWithTheme<ThemeConfig>({
+  extends: baseConfig,
 
   lang: 'en-US',
   title: 'Vue.js',
@@ -552,12 +558,28 @@ export default defineConfigWithTheme<Config>({
       }
     ],
     [
+      'link',
+      {
+        rel: 'preconnect',
+        href: 'https://sponsors.vuejs.org'
+      }
+    ],
+    [
       'script',
       {},
       fs.readFileSync(
         path.resolve(__dirname, './inlined-scripts/restorePreference.js'),
         'utf-8'
       )
+    ],
+    [
+      'script',
+      {
+        src: 'https://cdn.usefathom.com/script.js',
+        'data-site': 'XNOLWPLB',
+        'data-spa': 'auto',
+        defer: ''
+      }
     ]
   ],
 
@@ -627,21 +649,7 @@ export default defineConfigWithTheme<Config>({
     },
     build: {
       minify: 'terser',
-      chunkSizeWarningLimit: Infinity,
-      rollupOptions: {
-        output: {
-          chunkFileNames: 'assets/chunks/[name].[hash].js',
-          manualChunks(id, ctx) {
-            if (id.includes('gsap')) {
-              return 'gsap'
-            }
-            if (id.includes('dynamics.js')) {
-              return 'dynamics'
-            }
-            return moveToVendor(id, ctx)
-          }
-        }
-      }
+      chunkSizeWarningLimit: Infinity
     },
     json: {
       stringify: true
@@ -652,59 +660,3 @@ export default defineConfigWithTheme<Config>({
     reactivityTransform: true
   }
 })
-
-const cache = new Map<string, boolean>()
-
-/**
- * This is temporarily copied from Vite - which should be exported in a
- * future release.
- *
- * @TODO when this is exported by Vite, VitePress should ship a better
- * manual chunk strategy to split chunks for deps that are imported by
- * multiple pages but not all.
- */
-function moveToVendor(id: string, { getModuleInfo }: any) {
-  if (
-    id.includes('node_modules') &&
-    !/\.css($|\\?)/.test(id) &&
-    staticImportedByEntry(id, getModuleInfo, cache)
-  ) {
-    return 'vendor'
-  }
-}
-
-function staticImportedByEntry(
-  id: string,
-  getModuleInfo: any,
-  cache: Map<string, boolean>,
-  importStack: string[] = []
-): boolean {
-  if (cache.has(id)) {
-    return cache.get(id) as boolean
-  }
-  if (importStack.includes(id)) {
-    // circular deps!
-    cache.set(id, false)
-    return false
-  }
-  const mod = getModuleInfo(id)
-  if (!mod) {
-    cache.set(id, false)
-    return false
-  }
-
-  if (mod.isEntry) {
-    cache.set(id, true)
-    return true
-  }
-  const someImporterIs = mod.importers.some((importer: string) =>
-    staticImportedByEntry(
-      importer,
-      getModuleInfo,
-      cache,
-      importStack.concat(id)
-    )
-  )
-  cache.set(id, someImporterIs)
-  return someImporterIs
-}
